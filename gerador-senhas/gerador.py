@@ -64,7 +64,7 @@ def main(page: ft.Page):
 
 #Switch para selecionar se letras maiúsculas devem ser incluídas na senha
     upper_switch = ft.Switch(label="Letras maiúsculas")
-    lower_switch = ft.Switch(label="Letras maiúsculas, value=True")
+    lower_switch = ft.Switch(label="Letras maiúsculas", value=True)
     numbers_switch = ft.Switch(label="Incluir números")
     symbols_switch = ft.Switch(label="Incluir símbolos")
 
