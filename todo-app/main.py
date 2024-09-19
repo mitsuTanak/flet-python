@@ -5,7 +5,7 @@ class AppToDo:
     def __init__(self, page: ft.Page):
         # Inicializa o aplicativo com a página Flet e configura as configurações iniciais
         self.page = page
-        self.cofigurar_pagina()
+        self.configurar_pagina()
         self.banco_dados = DataBase()
         self.usuario = None
         self.verificar_usuario()
@@ -13,8 +13,8 @@ class AppToDo:
     def configurar_pagina(self):
         # Configura as propriedades iniciais da pagina
         self.page.title = 'Aplicativo ToDo'
-        self.page.window_width = 400
-        self.page.window_height = 750
+        self.page.window.width = 400
+        self.page.window.height = 750
         self.page.vertical_alignment = ft.MainAxisAlignment.START
         self.page.theme_mode = ft.ThemeMode.DARK # Define o tema escuro
         self.page.padding = 20
@@ -116,7 +116,7 @@ class AppToDo:
 
         botao_adicionar = ft.IconButton(
             icon=ft.icons.ADD_CIRCLE,
-            icon_color=self.cor['botão'],
+            icon_color=self.cor['botao'],
             icon_size=30,
             on_click=self.adicionar_tarefa,
             style=ft.ButtonStyle(
