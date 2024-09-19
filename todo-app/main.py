@@ -46,7 +46,7 @@ class AppToDo:
         # Verifica se p usuário já foi definido, caso contrario, pede nome
         def salvar_usuario(e):
             self.usuario = campo_usuario.value if campo_usuario.value else "Usuário"
-            self.page.controns.clear()
+            self.page.controls.clear()
             self.main()
         
         campo_usuario = ft.TextField(
@@ -139,8 +139,8 @@ class AppToDo:
             animation_duration=300,
             tabs=[
                 ft.Tab(text="Todas", icon=ft.icons.LIST),
-                ft.Tab(text="Pendentes", icon=ft.icons.PEDING_ACTIONS),
-                ft.Tab(text="Concluídas", icon=ft.icons.TESK_ALT),
+                ft.Tab(text="Pendentes", icon=ft.icons.PENDING_ACTIONS),
+                ft.Tab(text="Concluídas", icon=ft.icons.TASK_ALT),
             ],
             on_change=self.atualizar_lista_tarefas
         )
@@ -162,13 +162,13 @@ class AppToDo:
         self.lista_tarefas.controls.clear()
         query = 'SELECT * FROM "task"'
         if self.abas.selected_index==1:
-            query += 'WHERE "status" = "inconplete"'
+            query += 'WHERE "status" = "incomplete"'
         elif self.abas.selected_index == 2:
             query += 'WHERE "status" = "complete"'
 
         tarefas = self.banco_dados.searchItens(query)
         for tarefa in tarefas:
-            self.lista_tarefas.controls.append(self.criar_item_tareda(tarefa))
+            self.lista_tarefas.controls.append(self.criar_item_tarefa(tarefa))
         self.page.update()
 
     def criar_item_tarefa(self, tarefa):
