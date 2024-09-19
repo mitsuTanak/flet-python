@@ -53,7 +53,7 @@ class AppToDo:
             label="Digite seu nome",
             border_color=self.cor['primaria'],
             focused_border_color=self.cor['secundaria'],
-            text_style=ft.TextStyle(color=self.cor['text']),
+            text_style=ft.TextStyle(color=self.cor['texto']),
             bgcolor=self.cor['item_fundo'],
             border_radius=8,
         )
