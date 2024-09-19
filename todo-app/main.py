@@ -15,7 +15,7 @@ class AppToDo:
         self.page.title = 'Aplicativo ToDo'
         self.page.window_width = 400
         self.page.window_height = 750
-        self.page.vertical_alignment = ft.MainAxisAlifnment.START
+        self.page.vertical_alignment = ft.MainAxisAlignment.START
         self.page.theme_mode = ft.ThemeMode.DARK # Define o tema escuro
         self.page.padding = 20
         self.definir_cores()
@@ -26,7 +26,7 @@ class AppToDo:
             'primaria': '#3498db',
             'secundaria': '#2ecc71',
             'fundo': '#121212',
-            'texto': '#fff',
+            'texto': '#ffffff',
             'texto_secundario': '#b3b3b3',
             'destaque': '#e74c3c',
             'item_fundo': '#1e1e1e',
@@ -42,7 +42,7 @@ class AppToDo:
         else:
             self.main()
 
-    def verificar_usuario(self):
+    def pedir_nome_usuario(self):
         # Verifica se p usuário já foi definido, caso contrario, pede nome
         def salvar_usuario(e):
             self.usuario = campo_usuario.value if campo_usuario.value else "Usuário"
@@ -55,16 +55,16 @@ class AppToDo:
             focused_border_color=self.cor['secundaria'],
             text_style=ft.TextStyle(color=self.cor['text']),
             bgcolor=self.cor['item_fundo'],
-            border_radius=8
+            border_radius=8,
         )
 
         botao_confirmar = ft.ElevatedButton(
-            text="Confirmar"
+            text="Confirmar",
             on_click=salvar_usuario,
             style=ft.ButtonStyle(
-                color=self.cor['texto']
-                bgcolor=self.cor['botao']
-                shape=ft.RoundedRectangleBorder(radius=8)
+                color=self.cor['texto'],
+                bgcolor=self.cor['botao'],
+                shape=ft.RoundedRectangleBorder(radius=8),
             )
         )
 
@@ -81,16 +81,139 @@ class AppToDo:
             )
         )
 
-        def main(self):
-            # Configura e exibe a interface principal do aplicativo
-            self.page.bgcolor = self.cor['fundo']
-            self.page.add(
-                self.criar_cabeçalho(),
-                self.criar_secao_entrada(),
-                self.criar_abas(),
-                self.criar_lista_tarefas()
-            )
+    def main(self):
+        # Configura e exibe a interface principal do aplicativo
+        self.page.bgcolor = self.cor['fundo']
+        self.page.add(
+            self.criar_cabeçalho(),
+            self.criar_secao_entrada(),
+            self.criar_abas(),
+            self.criar_lista_tarefas()
+        )
 
-        def criar_cabecalho(self):
-            # Cria o cabeçalho com saudação ao usuario
-            return ft.Container()
+    def criar_cabecalho(self):
+        # Cria o cabeçalho com saudação ao usuario
+        return ft.Container(
+            content=ft.Column([
+                ft.Text(f'Olá, {self.usuario} 😊', size=24, color=self.cor['texto'], weight=ft.FontWeight.BOLD),
+                ft.Text('Gerencie suas tarefas diárias', size=16, color=self.cor['texto_secundario'])
+            ], alignment=ft.MainAxisAlignment.CENTER, spacing=5),
+            padding=ft.padding.symmetric(vertical=20)
+        )
+    
+    def criar_secao_entrada(self):
+        # Cria a seção de entrada para adicionar novas tarefas
+        self.entrada_tarefa = ft.TextField(
+            hint_text='Adicione uma nova tarefa...',
+            expand=True,
+            border_color=self.cor['borda'],
+            focused_border_color=self.cor['primaria'],
+            text_style=ft.TextStyle(color=self.cor['texto']),
+            hint_style=ft.TextStyle(color=self.cor['texto_secundario']),
+            bgcolor=self.cor['item_fundo'],
+            border_radius=8,
+        )
+
+        botao_adicionar = ft.IconButton(
+            icon=ft.icons.ADD_CIRCLE,
+            icon_color=self.cor['botão'],
+            icon_size=30,
+            on_click=self.adicionar_tarefa,
+            style=ft.ButtonStyle(
+                shape=ft.CircleBorder(),
+                bgcolor=self.cor['item_fundo'],
+            )
+        )
+
+        return ft.Container(
+            content=ft.Row([self.entrada_tarefa, botao_adicionar], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+            padding=10,
+            bgcolor=self.cor['item_fundo'],
+            border_radius=8,
+        )
+        
+    def criar_abas(self):
+        # Cria as abas para filtrar as tarefas (Todas, Pendentes, Concluídas)
+        self.abas = ft.Tabs(
+            selected_index=0,
+            animation_duration=300,
+            tabs=[
+                ft.Tab(text="Todas", icon=ft.icons.LIST),
+                ft.Tab(text="Pendentes", icon=ft.icons.PEDING_ACTIONS),
+                ft.Tab(text="Concluídas", icon=ft.icons.TESK_ALT),
+            ],
+            on_change=self.atualizar_lista_tarefas
+        )
+        return self.abas
+    
+    def criar_lista_tarefas(self):
+        # Cria o container para a lista de tarefas
+        self.lista_tarefas=ft.Column(scroll=ft.ScrollMode.AUTO, spacing=10)
+        self.atualizar_lista_tarefas()
+        return ft.Container(
+            content=self.lista_tarefas,
+            height=400,
+            padding=10,
+            bgcolor=self.cor['fundo']
+        )
+    
+    def atualizar_lista_tarefas(self, e=None):
+        # Atualizar a lista de tarefas com base na aba selecionada
+        self.lista_tarefas.controls.clear()
+        query = 'SELECT * FROM "task"'
+        if self.abas.selected_index==1:
+            query += 'WHERE "status" = "inconplete"'
+        elif self.abas.selected_index == 2:
+            query += 'WHERE "status" = "complete"'
+
+        tarefas = self.banco_dados.searchItens(query)
+        for tarefa in tarefas:
+            self.lista_tarefas.controls.append(self.criar_item_tareda(tarefa))
+        self.page.update()
+
+    def criar_item_tarefa(self, tarefa):
+        # Cria um item individual da lista de tarefas
+        return ft.Container(
+            content=ft.Row([
+                ft.Checkbox(
+                    value=tarefa[1] == 'complete',
+                    on_change=lambda e, t=tarefa[0]: self.alternar_status_tarefa(e, t),
+                    fill_color=self.cor['checkbox'],
+                ),
+                ft.Text(tarefa[0], color=self.cor['texto'], size=16, expand=True),
+                ft.IconButton(
+                    icon=ft.icons.DELETE_OUTLINE,
+                    icon_color=self.cor['destaque'],
+                    on_click=lambda _, t=tarefa[0]: self.excluir_tarefa(t)
+                )
+            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+            border=ft.border.all(1, self.cor['borda']),
+            border_radius=8,
+            bgcolor=self.cor['item_fundo']
+        )
+    def adicionar_tarefa(self, e):
+        # Adicionar uma nova tarefa ao banco de dados e atulaiza a lista
+        if self.entrada_tarefa.value:
+            self.banco_dados.addTasks(self.entrada_tarefa.value, 'incomplete')
+            self.entrada_tarefa.value = ''
+            self.atualizar_lista_tarefas()
+
+    def alternar_status_tarefa(self, e, tarefa):
+        # Alterna o status de uma tarefa entre completa e incompleta
+        novo_status = 'complete' if e.control.value else 'incomplete'
+        self.banco_dados.updateTasks(novo_status, tarefa)
+        self.atualizar_lista_tarefas()
+
+    def excluir_tarefa(self, tarefa):
+        # Excluir uma tarefa do banco e dados e atualiza a lista
+        self.banco_dados.deleteTasks(tarefa)
+        self.atualizar_lista_tarefas()
+        self.page.snack_bar = ft.SnackBar(
+            content=ft.Text(f"Tarefa '{tarefa}' excluída com sucesso", color=self.cor['texto']),
+            bgcolor=self.cor['item_fundo']
+        )
+        self.page.snack_bar.open = True
+        self.page.update()
+
+if __name__ == "__main__":
+    ft.app(target=AppToDo)
