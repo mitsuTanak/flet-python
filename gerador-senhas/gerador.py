@@ -2,6 +2,8 @@ import flet as ft
 import random
 import string
 
+# =====--- Pedro Mitsuaki ---===== #
+
 #Função principal do aplicatico, que define a interface e a lógica
 def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.SYSTEM
@@ -64,7 +66,7 @@ def main(page: ft.Page):
 
 #Switch para selecionar se letras maiúsculas devem ser incluídas na senha
     upper_switch = ft.Switch(label="Letras maiúsculas")
-    lower_switch = ft.Switch(label="Letras maiúsculas", value=True)
+    lower_switch = ft.Switch(label="Letras minúsculas", value=True)
     numbers_switch = ft.Switch(label="Incluir números")
     symbols_switch = ft.Switch(label="Incluir símbolos")
 

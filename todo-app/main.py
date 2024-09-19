@@ -1,6 +1,8 @@
 import flet as ft
 from bd.connectiondb import DataBase
 
+# =====--- Pedro Mitsuaki ---===== #
+
 class AppToDo:
     def __init__(self, page: ft.Page):
         # Inicializa o aplicativo com a página Flet e configura as configurações iniciais
@@ -9,7 +11,7 @@ class AppToDo:
         self.banco_dados = DataBase()
         self.usuario = None
         self.verificar_usuario()
-    
+
     def configurar_pagina(self):
         # Configura as propriedades iniciais da pagina
         self.page.title = 'Aplicativo ToDo'
@@ -30,7 +32,7 @@ class AppToDo:
             'texto_secundario': '#b3b3b3',
             'destaque': '#e74c3c',
             'item_fundo': '#1e1e1e',
-            'borda': '#3333',
+            'borda': '#333',
             'checkbox': '#3498db',
             'botao': '#3498db'
         }
@@ -48,7 +50,7 @@ class AppToDo:
             self.usuario = campo_usuario.value if campo_usuario.value else "Usuário"
             self.page.controls.clear()
             self.main()
-        
+
         campo_usuario = ft.TextField(
             label="Digite seu nome",
             border_color=self.cor['primaria'],
@@ -85,7 +87,7 @@ class AppToDo:
         # Configura e exibe a interface principal do aplicativo
         self.page.bgcolor = self.cor['fundo']
         self.page.add(
-            self.criar_cabeçalho(),
+            self.criar_cabecalho(),
             self.criar_secao_entrada(),
             self.criar_abas(),
             self.criar_lista_tarefas()
@@ -100,7 +102,7 @@ class AppToDo:
             ], alignment=ft.MainAxisAlignment.CENTER, spacing=5),
             padding=ft.padding.symmetric(vertical=20)
         )
-    
+
     def criar_secao_entrada(self):
         # Cria a seção de entrada para adicionar novas tarefas
         self.entrada_tarefa = ft.TextField(
@@ -131,7 +133,7 @@ class AppToDo:
             bgcolor=self.cor['item_fundo'],
             border_radius=8,
         )
-        
+
     def criar_abas(self):
         # Cria as abas para filtrar as tarefas (Todas, Pendentes, Concluídas)
         self.abas = ft.Tabs(
@@ -145,7 +147,7 @@ class AppToDo:
             on_change=self.atualizar_lista_tarefas
         )
         return self.abas
-    
+
     def criar_lista_tarefas(self):
         # Cria o container para a lista de tarefas
         self.lista_tarefas=ft.Column(scroll=ft.ScrollMode.AUTO, spacing=10)
@@ -156,15 +158,15 @@ class AppToDo:
             padding=10,
             bgcolor=self.cor['fundo']
         )
-    
+
     def atualizar_lista_tarefas(self, e=None):
         # Atualizar a lista de tarefas com base na aba selecionada
         self.lista_tarefas.controls.clear()
-        query = 'SELECT * FROM "task"'
-        if self.abas.selected_index==1:
-            query += 'WHERE "status" = "incomplete"'
+        query = 'SELECT * FROM "tasks"'
+        if self.abas.selected_index == 1:
+            query += ' WHERE "status" = "incomplete"'
         elif self.abas.selected_index == 2:
-            query += 'WHERE "status" = "complete"'
+            query += ' WHERE "status" = "complete"'
 
         tarefas = self.banco_dados.searchItens(query)
         for tarefa in tarefas:
@@ -189,8 +191,10 @@ class AppToDo:
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             border=ft.border.all(1, self.cor['borda']),
             border_radius=8,
+            padding=10,
             bgcolor=self.cor['item_fundo']
         )
+
     def adicionar_tarefa(self, e):
         # Adicionar uma nova tarefa ao banco de dados e atulaiza a lista
         if self.entrada_tarefa.value:
