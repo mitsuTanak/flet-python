@@ -15,13 +15,14 @@ def main(page: ft.Page):
     def gerar_senha(e):
         comprimento = int(slider.value)
         caracteres = ""
+        
         if upper_switch.value:
             caracteres += string.ascii_uppercase
-        if lower_switch. value:
+        if lower_switch.value:
             caracteres += string.ascii_lowercase
-        if lower_switch. value:
+        if lower_switch.value:
             caracteres += string.digits
-        if lower_switch. value:
+        if lower_switch.value:
             caracteres += string.punctuation
 
         if caracteres:
